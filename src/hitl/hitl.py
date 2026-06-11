@@ -65,32 +65,41 @@ class ConfidenceRouter:
         Returns:
             RoutingDecision with routing action and metadata
         """
-        # TODO 12: Implement routing logic
-        #
         # 1. Check if action_type is in HIGH_RISK_ACTIONS
-        #    -> If yes: always escalate (action="escalate", priority="high",
-        #       requires_human=True, reason="High-risk action: {action_type}")
-        #
-        # 2. Check confidence thresholds:
-        #    - confidence >= 0.9:
-        #      action="auto_send", priority="low",
-        #      requires_human=False, reason="High confidence"
-        #
-        #    - 0.7 <= confidence < 0.9:
-        #      action="queue_review", priority="normal",
-        #      requires_human=True, reason="Medium confidence — needs review"
-        #
-        #    - confidence < 0.7:
-        #      action="escalate", priority="high",
-        #      requires_human=True, reason="Low confidence — escalating"
+        if action_type in HIGH_RISK_ACTIONS:
+            return RoutingDecision(
+                action="escalate",
+                confidence=confidence,
+                reason=f"High-risk action: {action_type}",
+                priority="high",
+                requires_human=True,
+            )
 
-        return RoutingDecision(
-            action="auto_send",
-            confidence=confidence,
-            reason="TODO: implement routing logic",
-            priority="low",
-            requires_human=False,
-        )  # TODO: Replace with implementation
+        # 2. Check confidence thresholds:
+        if confidence >= self.HIGH_THRESHOLD:
+            return RoutingDecision(
+                action="auto_send",
+                confidence=confidence,
+                reason="High confidence",
+                priority="low",
+                requires_human=False,
+            )
+        elif confidence >= self.MEDIUM_THRESHOLD:
+            return RoutingDecision(
+                action="queue_review",
+                confidence=confidence,
+                reason="Medium confidence — needs review",
+                priority="normal",
+                requires_human=True,
+            )
+        else:
+            return RoutingDecision(
+                action="escalate",
+                confidence=confidence,
+                reason="Low confidence — escalating",
+                priority="high",
+                requires_human=True,
+            )
 
 
 # ============================================================
@@ -109,27 +118,27 @@ class ConfidenceRouter:
 hitl_decision_points = [
     {
         "id": 1,
-        "name": "TODO: Name this decision point",
-        "trigger": "TODO: When does this trigger?",
-        "hitl_model": "TODO: human-in-the-loop / human-on-the-loop / human-as-tiebreaker",
-        "context_needed": "TODO: What does the reviewer need to see?",
-        "example": "TODO: Give a concrete example scenario",
+        "name": "High-Value Transaction Authorization",
+        "trigger": "Transaction request exceeding 100,000,000 VND (or 5,000 USD)",
+        "hitl_model": "human-in-the-loop",
+        "context_needed": "Sender and recipient account details, transaction amount, user session history, device info, and biometric confirmation status.",
+        "example": "A user requests the agent to transfer 250,000,000 VND to a new external account. The system flags this as high-value, holds the transaction, and prompts a bank agent to verify the request and contact the user for confirmation.",
     },
     {
         "id": 2,
-        "name": "TODO: Name this decision point",
-        "trigger": "TODO: When does this trigger?",
-        "hitl_model": "TODO: human-in-the-loop / human-on-the-loop / human-as-tiebreaker",
-        "context_needed": "TODO: What does the reviewer need to see?",
-        "example": "TODO: Give a concrete example scenario",
+        "name": "Account Recovery & Password Reset Verification",
+        "trigger": "Request to reset account password or update recovery phone/email following failed authentication attempts",
+        "hitl_model": "human-in-the-loop",
+        "context_needed": "User identity documents (photo of National ID/CCCD), facial match score from automated KYC, log of recent failed login attempts, and account history.",
+        "example": "A user fails to log in 3 times and asks the chatbot to change their password and linked phone number. The agent flags this as high risk, locks the account, and routes the ID photos uploaded by the user to a customer service supervisor for verification.",
     },
     {
         "id": 3,
-        "name": "TODO: Name this decision point",
-        "trigger": "TODO: When does this trigger?",
-        "hitl_model": "TODO: human-in-the-loop / human-on-the-loop / human-as-tiebreaker",
-        "context_needed": "TODO: What does the reviewer need to see?",
-        "example": "TODO: Give a concrete example scenario",
+        "name": "Suspicious Activity & Fraud Prevention Review",
+        "trigger": "Anomalous transaction request flagged by the automated fraud detection model (e.g. transfer originating from an unusual location/IP or rapid repeated attempts)",
+        "hitl_model": "human-on-the-loop",
+        "context_needed": "Geographic location of the request, transaction history comparison, IP address risk score, and type of merchant/receiver.",
+        "example": "An automated script attempts to make three transfers of 9,000,000 VND in quick succession from an IP address in a different country. The system flags it, a security analyst reviews the live dashboard, and overrides the chatbot to freeze the account.",
     },
 ]
 
