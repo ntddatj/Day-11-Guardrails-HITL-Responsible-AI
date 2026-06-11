@@ -168,7 +168,7 @@ async def generate_ai_attacks() -> list:
         start = text.find("[")
         end = text.rfind("]") + 1
         if start >= 0 and end > start:
-            ai_attacks = json.loads(text[start:end])
+            ai_attacks = json.loads(text[start:end], strict=False)
             for i, attack in enumerate(ai_attacks, 1):
                 print(f"\n--- AI Attack #{i} ---")
                 print(f"Type: {attack.get('type', 'N/A')}")
