@@ -1,8 +1,8 @@
 # BÁO CÁO BÀI TẬP THỰC HÀNH & BÀI TẬP LỚN
 ## Day 11: Guardrails, HITL & Responsible AI — Xây dựng Hệ thống Trợ lý An toàn và Trách nhiệm
 
-* **Môn học:** AICB-P1 — AI Agent Development
-* **Học viên:** [Tên Học Viên]
+* **Học viên:** Nguyễn Tiến Đạt
+* **MHV:** 2A202600595
 * **Trạng thái bài tập:** Hoàn thành 13/13 TODOs (Lab) + Báo cáo Phân tích (Assignment Part B)
 
 ---
